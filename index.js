@@ -24,9 +24,20 @@ app.get('*',(req, res, next) => {
   	let filePath = path.resolve(path.join(ROOT_DIR,req.url));
   if(filePath.indexOf(ROOT_DIR) !==0){
   	res.send(400,'invalid path');
+  	console.log(' empty return');
   	return;
   }
-  fs.stat(filePath)
+  //returns a directory 
+  // promise version of the callback to read file
+  let stat = await fs.promise.stat(filePath);
+
+  if(stat.isDirectory()){
+   let files= await	fs.promise.readdir(filePath);
+   res.json(files);
+   console.log(' empty return2',files);
+   return;
+  }
+
   fs.createReadStream(filePath).pipe(res);
 }().catch(next)
 
